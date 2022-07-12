@@ -1,0 +1,3 @@
+To run these simulations, simply navigate to this folder and run smoother.py. 
+
+WARNING: Due to the large amounts of parameter permutations, this simulation can take more than a week. We ran these simulations in parallel on a local cluster, with one job for each of the ten random seeds. We recommend anyone reproducing these computations to use a similar setup, or reduce the range of permutations (lambdas_filter, lambdas_smoother, gammas, orders, random_seeds).

@@ -1,0 +1,1 @@
+To generate these figures, run the files "filtering_and_smoothing_samples.py" in the "Structure L63" and "Structure L96" subfolders first. Then run the file "structure_comparison.py" in this folder.

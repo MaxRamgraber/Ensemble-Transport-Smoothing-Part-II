@@ -1,0 +1,3 @@
+This folder contains the files necessary to reproduce our iEnKS reference simulations using the DAPPER toolbox. The folder 'dapper' contains a slightly adapted version of the Dapper toolbox, edited to calculated and store the CRPS scores during the iEnKS pass.
+
+The folders MDA PertObs and MDA Sqrt contain to the Python files necessary to reproduce the perturbed observation and square root variants. Run the files starting with 'iEnKS' in each subfolder to do so.
