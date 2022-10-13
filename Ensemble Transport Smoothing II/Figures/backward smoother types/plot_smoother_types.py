@@ -1,7 +1,25 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import turbo_colormap
+
+use_latex   = True
+
+if use_latex:
+    
+    from matplotlib import rc
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    titlesize   = 14
+    labelsize   = 12
+    addendum    = "_latex"
+    pad         = -20
+    
+else:
+    
+    titlesize   = 12
+    labelsize   = 10
+    addendum    = ""
+    pad         = -25
 
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", 
     ["xkcd:midnight blue",
@@ -30,11 +48,11 @@ cb1 = matplotlib.colorbar.ColorbarBase(
     norm        = norm,
     orientation = 'horizontal')
 
-cb1.set_label("algorithm progress", labelpad=-10)
+cb1.set_label("algorithm progress", labelpad=-10, fontsize = labelsize)
 
 plt.gca().xaxis.set_ticks_position('top')
 plt.gca().xaxis.set_label_position('top')
-cb1.ax.set_xticklabels(['start', 'end'])  # horizontal colorbar
+cb1.ax.set_xticklabels(['start', 'end'], fontsize = labelsize)  # horizontal colorbar
 
 
 plt.gca().annotate('', xy=(0.1, 1.5), xycoords='axes fraction', xytext=(0.425, 1.5), 
@@ -82,7 +100,7 @@ plt.fill(2 + circ_x, 0 + circ_y, color=cmap(0.3))
 plt.gca().annotate('', xy=(2, 0), xytext=(1, 0), 
         arrowprops=dict(arrowstyle = '->',color='xkcd:dark grey'))
 
-plt.gca().text(3, 0, "filtering forecast", ha="left", va="center",zorder=10,color="k",fontsize=10)
+plt.gca().text(3, 0, "filtering forecast", ha="left", va="center",zorder=10,color="k",fontsize=labelsize)
 
 plt.fill(12 + triang_x, 0.5 + triang_y, color=cmap(0.5))
 
@@ -91,7 +109,7 @@ plt.fill(12 + circ_x, -0.5 + circ_y, color=cmap(0.55))
 plt.gca().annotate('', xy=(12, 0.5), xytext=(12, -0.5), 
         arrowprops=dict(arrowstyle = '->',color='xkcd:dark grey'))
 
-plt.gca().text(13, 0, "filtering update", ha="left", va="center",zorder=10,color="k",fontsize=10)
+plt.gca().text(13, 0, "filtering update", ha="left", va="center",zorder=10,color="k", fontsize = labelsize)
 
 plt.fill(22 + square_x, 0.5 + square_y, color=cmap(0.8))
 
@@ -107,7 +125,7 @@ plt.gca().annotate('', xy=(22, 0.5), xytext=(23, 0.5),
 plt.gca().annotate('', xy=(22, -0.5), xytext=(23, -0.5), 
         arrowprops=dict(arrowstyle = '->',color='xkcd:dark grey'))
 
-plt.gca().text(24, 0, "smoothing update", ha="left", va="center",zorder=10,color="k",fontsize=10)
+plt.gca().text(24, 0, "smoothing update", ha="left", va="center",zorder=10,color="k", fontsize = labelsize)
 
 
 # plt.gca().annotate('', xy=(6, 0.5), xytext=(6, -0.5), 
@@ -170,17 +188,17 @@ for t in np.arange(1,T,1):
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
             
             
-plt.title(r'$\bf{A}$: multi-pass (every step)', loc='left', fontsize=10)
+plt.title(r'$\bf{A}$: multi-pass (every step)', loc='left', fontsize = labelsize)
 plt.axis('equal')
 
-plt.xlabel('state block', labelpad=-10)
-plt.ylabel('time scubscript $s$', labelpad=-10)
-plt.ylabel('conditioned on data', labelpad=-25)
+plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
+plt.ylabel('time scubscript $s$', labelpad=-10, fontsize = labelsize)
+plt.ylabel('conditioned on data', labelpad=pad, fontsize = labelsize)
 ax = plt.gca()
 ax.set_xticks([1,T-2])
-ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'])
+ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
 ax.set_yticks([2,T-1])
-ax.set_yticklabels(['$\mathbf{y}_{1}^{*}$','$\mathbf{y}_{1:t}^{*}$'])
+ax.set_yticklabels(['$\mathbf{y}_{1}^{*}$','$\mathbf{y}_{1:t}^{*}$'], fontsize = labelsize)
 
 #%%
 
@@ -229,13 +247,13 @@ for t in np.arange(1,T,1):
             
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
-plt.title(r'$\bf{B}$: multi-pass (selected steps)', loc='left', fontsize=10)
+plt.title(r'$\bf{B}$: multi-pass (selected steps)', loc='left', fontsize=labelsize)
 plt.axis('equal')
 
-plt.xlabel('state block', labelpad=-10)
+plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
 ax = plt.gca()
 ax.set_xticks([1,T-2])
-ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'])
+ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
 ax.set_yticks([2,T-1])
 ax.set_yticklabels(['',''])
 
@@ -288,13 +306,13 @@ for t in np.arange(1,T,1):
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
 
-plt.title(r'$\bf{C}$: multi-pass (fixed-lag)', loc='left', fontsize=10)
+plt.title(r'$\bf{C}$: multi-pass (fixed-lag)', loc='left', fontsize=labelsize)
 plt.axis('equal')
 
-plt.xlabel('state block', labelpad=-10)
+plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
 ax = plt.gca()
 ax.set_xticks([1,T-2])
-ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'])
+ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
 ax.set_yticks([2,T-1])
 ax.set_yticklabels(['',''])
 
@@ -344,18 +362,18 @@ for t in np.arange(1,T,1):
                 
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
-plt.title(r'$\bf{D}$: single-pass', loc='left', fontsize=10)
+plt.title(r'$\bf{D}$: single-pass', loc='left', fontsize=labelsize)
 plt.axis('equal')
 
-plt.xlabel('state block', labelpad=-10)
+plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
 ax = plt.gca()
 ax.set_xticks([1,T-2])
-ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'])
+ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
 ax.set_yticks([2,T-1])
 ax.set_yticklabels(['',''])
 
-plt.savefig('smoother_types_backward.png',dpi=600,bbox_inches='tight')
-plt.savefig('smoother_types_backward.pdf',dpi=600,bbox_inches='tight')
+plt.savefig('smoother_types_backward'+addendum+'.png',dpi=600,bbox_inches='tight')
+plt.savefig('smoother_types_backward'+addendum+'.pdf',dpi=600,bbox_inches='tight')
 
 
 

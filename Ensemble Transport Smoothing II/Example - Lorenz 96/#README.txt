@@ -1,0 +1,3 @@
+This folder includes the files necessary to reconstruct the EnTS and iEnKS results and result figures for the Lorenz-96 experiments. To generate the output files, follow the instructions in the subfolders "EnTS simulations" and "iEnKS simulations". At the end of these simulations, this root folder should include 10 sub-folders named "L96_RS_0" through "L96_RS_9", as well as as two Python pickles labelled "iEnKS_L96_MDA_PertObs.p" and "iEnKS_L96_MDA_Sqrt.p".
+
+Subsequently running the Python code "plot_results_L96.py" will generate the output figures used in the manuscript.

@@ -12,6 +12,23 @@ if __name__ == '__main__':
     import os
     from matplotlib.lines import Line2D
     
+    use_latex   = False
+    
+    if use_latex:
+        
+        from matplotlib import rc
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+        rc('text', usetex=True)
+        titlesize   = 14
+        labelsize   = 12
+        addendum    = "_latex"
+        
+    else:
+        
+        titlesize   = 12
+        labelsize   = 10
+        addendum    = ""
+    
     # This is a small auxiliary function converting "1" to "1st" and "2" to "2nd"
     # and so on, for printing later on
     ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
@@ -450,9 +467,9 @@ if __name__ == '__main__':
     plt.xlim([0,500])
     
     # Label the axes
-    plt.title("nonlinear ensemble transport filter",fontsize=10)
-    plt.ylabel("state")
-    plt.xlabel("time step")
+    plt.title("nonlinear ensemble transport filter", fontsize = labelsize)
+    plt.ylabel("state", fontsize = labelsize)
+    plt.xlabel("time step", fontsize = labelsize)
     
     # Create a custom legend
     legend_elements = [Line2D([0], [0], marker='o', color='w', label='filtering posterior samples',
@@ -476,7 +493,7 @@ if __name__ == '__main__':
     
     # Label this subplot
     plt.text(xpos[0],ypos[1]+0.1,r'$\bf{A}$: Filter', 
-        transform=plt.gca().transAxes, fontsize=12,
+        transform=plt.gca().transAxes, fontsize = titlesize,
         verticalalignment='top',horizontalalignment='left')
     
     # Draw a grey box around it
@@ -492,6 +509,8 @@ if __name__ == '__main__':
     plt.gca().annotate('', xy=(xpos[1], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[0]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
     
+    plt.xticks(fontsize=labelsize)
+    plt.yticks(fontsize=labelsize)
     
     plt.subplot(gs[0,1])
     
@@ -565,8 +584,8 @@ if __name__ == '__main__':
     plt.gca().set_xticklabels([])
     
     # Label the axes
-    plt.title("linear ensemble transport smoother",fontsize=10)
-    plt.ylabel("state")
+    plt.title("linear ensemble transport smoother", fontsize = labelsize)
+    plt.ylabel("state", fontsize = labelsize)
     
     # Create a custom legend
     legend_elements = [Line2D([0], [0], marker='o', color='w', label='smoothing posterior samples',
@@ -574,7 +593,7 @@ if __name__ == '__main__':
                        Line2D([0], [0], color='xkcd:crimson', lw=1, label='true state'),
                        Line2D([0], [0], marker='o', color='w', label='observations',
                               markerfacecolor='xkcd:cerulean', markersize=5)]
-    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right')
+    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right', fontsize = labelsize)
     
     # Define a position in subplot dimensions
     xpos    = [-0.05,1.12]
@@ -590,7 +609,7 @@ if __name__ == '__main__':
     
     # Label the subplot
     plt.text(xpos[0],ypos[1]+0.1,r'$\bf{B}$: Smoothers', 
-        transform=plt.gca().transAxes, fontsize=12,
+        transform=plt.gca().transAxes, fontsize=titlesize,
         verticalalignment='top',horizontalalignment='left')
     
     # Draw a grey box around both subdivided subplots
@@ -606,7 +625,8 @@ if __name__ == '__main__':
     plt.gca().annotate('', xy=(xpos[1], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[0]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
     
-    
+    plt.xticks(fontsize=labelsize)
+    plt.yticks(fontsize=labelsize)
     
     plt.subplot(gs2[0,1])
     
@@ -668,9 +688,9 @@ if __name__ == '__main__':
     plt.xlim([0,500])
     
     # Label the subplot and axes
-    plt.title("nonlinear ensemble transport smoother",fontsize=10)
-    plt.ylabel("state")
-    plt.xlabel("time step")
+    plt.title("nonlinear ensemble transport smoother", fontsize = labelsize)
+    plt.ylabel("state", fontsize = labelsize)
+    plt.xlabel("time step", fontsize = labelsize)
 
     # Create a custom legend
     legend_elements = [Line2D([0], [0], marker='o', color='w', label='smoothing posterior samples',
@@ -678,13 +698,16 @@ if __name__ == '__main__':
                        Line2D([0], [0], color='xkcd:crimson', lw=1, label='true state'),
                        Line2D([0], [0], marker='o', color='w', label='observations',
                               markerfacecolor='xkcd:cerulean', markersize=5)]
-    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right')
+    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right', fontsize = labelsize)
     
     plt.plot(
         [125,125],
         [-2,2],
         color   = 'xkcd:dark grey',
         ls      = '--')
+    
+    plt.xticks(fontsize=labelsize)
+    plt.yticks(fontsize=labelsize)
     
     plt.subplot(gs2[1,1])
     
@@ -725,6 +748,6 @@ if __name__ == '__main__':
                     labelbottom=False)
     
     # Save the figure
-    plt.savefig('bimodal_smoother.png',dpi = 300,bbox_inches='tight')
+    plt.savefig('bimodal_smoother'+addendum+'.png',dpi = 300,bbox_inches='tight')
         
     

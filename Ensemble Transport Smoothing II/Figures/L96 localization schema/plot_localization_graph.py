@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import turbo_colormap
 import colorsys
 import pickle
 import scipy.linalg
@@ -10,6 +9,27 @@ from matplotlib import pyplot as plt
 from matplotlib import patches
 from matplotlib import text as mtext
 import math
+
+use_latex   = True
+
+if use_latex:
+    
+    from matplotlib import rc
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    titlesize   = 14
+    labelsize   = 12
+    addendum    = "_latex"
+    pad         = -20
+    bigsize     = 22
+    
+else:
+    
+    titlesize   = 12
+    labelsize   = 10
+    addendum    = ""
+    pad         = -25
+    bigsize     = 18
 
 class CurvedText(mtext.Text):
     """
@@ -393,11 +413,11 @@ cb1 = matplotlib.colorbar.ColorbarBase(
     norm        = norm,
     orientation = 'horizontal')
 
-cb1.set_label("algorithm progress", labelpad=-10)
+cb1.set_label("algorithm progress", labelpad=-10, fontsize = labelsize)
 
 plt.gca().xaxis.set_ticks_position('top')
 plt.gca().xaxis.set_label_position('top')
-cb1.ax.set_xticklabels(['start', 'end'])  # horizontal colorbar
+cb1.ax.set_xticklabels(['start', 'end'], fontsize = labelsize)  # horizontal colorbar
 
 plt.gca().annotate('', xy=(0.1, 1.75), xycoords='axes fraction', xytext=(0.4, 1.75), 
             arrowprops=dict(arrowstyle = '-',color='xkcd:dark grey'))
@@ -406,7 +426,7 @@ plt.gca().annotate('', xy=(0.9, 1.75), xycoords='axes fraction', xytext=(0.6, 1.
 
 plt.subplot(gs[1,:])
 
-plt.title(r'$\bf{A}$: hidden Markov model',fontsize=10,loc="left")
+plt.title(r'$\bf{A}$: hidden Markov model',fontsize=labelsize,loc="left")
 
 
 labels  = [
@@ -467,9 +487,9 @@ for n in range(Nnodes):
     
         plt.gca().add_patch(plt.Circle(xpos[n,:], 0.3, color=cmap(colorcounter/colorcounter_max)))
         if n != Nnodes-1:
-            plt.gca().text(xpos[n,0], xpos[n,1], '$x'+labels[n], ha="center", va="center",zorder=10,color=textcolor,fontsize=12)
+            plt.gca().text(xpos[n,0], xpos[n,1], '$x'+labels[n], ha="center", va="center",zorder=10,color=textcolor,fontsize=titlesize)
         else:
-            plt.gca().text(xpos[n,0], xpos[n,1], '$x'+labels[n], ha="center", va="center",zorder=10,color=[0.8,0.8,0.8],fontsize=12)
+            plt.gca().text(xpos[n,0], xpos[n,1], '$x'+labels[n], ha="center", va="center",zorder=10,color=[0.8,0.8,0.8],fontsize=titlesize)
         
         if n != 0:
             plt.arrow(
@@ -496,9 +516,9 @@ for n in range(Nnodes):
         colorcounter += 1
         plt.gca().add_patch(plt.Circle(ypos[n,:], 0.3, color=cmap(colorcounter/colorcounter_max)))
         if n != Nnodes-1:
-            plt.gca().text(ypos[n,0], ypos[n,1], '$y'+labels[n], ha="center", va="center",zorder=10,color=textcolor,fontsize=12)
+            plt.gca().text(ypos[n,0], ypos[n,1], '$y'+labels[n], ha="center", va="center",zorder=10,color=textcolor,fontsize=titlesize)
         else:
-            plt.gca().text(ypos[n,0], ypos[n,1], '$y'+labels[n], ha="center", va="center",zorder=10,color=[0.8,0.8,0.8],fontsize=12)
+            plt.gca().text(ypos[n,0], ypos[n,1], '$y'+labels[n], ha="center", va="center",zorder=10,color=[0.8,0.8,0.8],fontsize=titlesize)
         
         plt.arrow(
             pos[n,0],
@@ -563,7 +583,7 @@ ax = fig.add_subplot(gs[2,0], projection='3d')
 
 plt.gca().view_init(elev=0., azim=-70)
 
-plt.title(r'$\bf{B}$: localized backward smoothing',fontsize=10,loc="left")
+plt.title(r'$\bf{B}$: localized backward smoothing',fontsize=labelsize,loc="left")
 
 color1  = cmap((2)/colorcounter_max) #cmap(0.25)
 color2  = cmap((0)/colorcounter_max)#cmap(0.95)#cmap(0.75)
@@ -723,7 +743,7 @@ plt.gca().scatter3D(
     zorder  = -circlepos[d,1]-1,
     label   = "updated state")
 
-plt.legend(frameon = False,borderpad=0,loc='lower right')
+plt.legend(frameon = False,borderpad=0,loc='lower right', fontsize = labelsize)
         
 # Get the vertices for the clique
 difference  = [x for x in clique_future if x not in clique_current]
@@ -887,31 +907,31 @@ color1  = cmap((2)/colorcounter_max) #cmap(0.25)
 color2  = cmap((0)/colorcounter_max)#cmap(0.95)#cmap(0.75)
 
 ax.text2D(0.7, 0.5, 'clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey')
+     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey', fontsize = labelsize)
 
 ax.text2D(0.3, 0.5, 'localized \n clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=color1)
+     verticalalignment='center', transform=ax.transAxes,color=color1, fontsize = labelsize)
 
 
 
-ax.text2D(0.15, 0.85, '$\mathbf{x}_{1}$', horizontalalignment='center', fontsize = 12,
+ax.text2D(0.15, 0.85, '$\mathbf{x}_{1}$', horizontalalignment='center', fontsize = titlesize,
      verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
 
-ax.text2D(0.85, 0.85, '$\mathbf{x}_{2}$', horizontalalignment='center', fontsize = 12,
+ax.text2D(0.85, 0.85, '$\mathbf{x}_{2}$', horizontalalignment='center', fontsize = titlesize,
      verticalalignment='center', transform=ax.transAxes,color=cmap((2)/colorcounter_max))
 
 
 ax.text2D(0.0975, 0.535, '$x_{1}^{30}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
 
 ax.text2D(0.102, 0.4725, '$x_{1}^{29}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
 
 ax.text2D(0.112, 0.4, '$x_{1}^{28}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
 
 ax.text2D(0.13, 0.325, '$\dots$', horizontalalignment='center', rotation = -75,
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
 
 
 plt.gca().annotate('', xy=(0., -0.01), xycoords='axes fraction', xytext=(0., 1.01), 
@@ -969,7 +989,7 @@ ax = fig.add_subplot(gs[2,1], projection='3d')
 
 plt.gca().view_init(elev=30, azim=178)
 
-plt.title(r'$\bf{C}$: decomposed, localized filtering',fontsize=10,loc="left")
+plt.title(r'$\bf{C}$: decomposed, localized filtering',fontsize=labelsize,loc="left")
 
 color1  = cmap((colorcounter-1)/colorcounter_max) #cmap(0.25)
 color2  = cmap((colorcounter-0)/colorcounter_max)#cmap(0.95)#cmap(0.75)
@@ -1223,26 +1243,26 @@ ax.set_zlim(mid_z - max_range + zoffset, mid_z + max_range + zoffset)
 plt.show()
 
 ax.text2D(0.5, 0.65, 'clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey')
+     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey', fontsize = labelsize)
 
 ax.text2D(0.7, 0.4, 'localized clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max), fontsize = labelsize)
 
 
 
-ax.text2D(0.85, 0.85, '$\mathbf{x}_{t}$', horizontalalignment='center', fontsize = 12,
+ax.text2D(0.85, 0.85, '$\mathbf{x}_{t}$', horizontalalignment='center', fontsize = titlesize,
      verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-2)/colorcounter_max))
 
-ax.text2D(0.85, 0.15, '$\mathbf{y}_{t}$', horizontalalignment='center', fontsize = 12,
+ax.text2D(0.85, 0.15, '$\mathbf{y}_{t}$', horizontalalignment='center', fontsize = titlesize,
      verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max))
 
 
 
 ax.text2D(0.51, 0.51, '$x_{t}^{20}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-2)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-2)/colorcounter_max), fontsize = labelsize)
 
 ax.text2D(0.505, 0.075, '$y_{t}^{20}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max))
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max), fontsize = labelsize)
 
 
 plt.gca().annotate('', xy=(0., -0.01), xycoords='axes fraction', xytext=(0., 1.01), 
@@ -1309,6 +1329,6 @@ plt.legend(frameon = False,borderpad=0)
 #%%
 
 # # # Save the figure
-plt.savefig('graph_localized_no_map.png',dpi=600,bbox_inches='tight')
-plt.savefig('graph_localized_no_map.pdf',dpi=600,bbox_inches='tight')
+plt.savefig('graph_localized'+addendum+'.png',dpi=600,bbox_inches='tight')
+plt.savefig('graph_localized'+addendum+'.pdf',dpi=600,bbox_inches='tight')
 

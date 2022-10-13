@@ -15,6 +15,24 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 plt.close("all")
 
+
+use_latex   = True
+
+if use_latex:
+    
+    from matplotlib import rc
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    titlesize   = 14
+    labelsize   = 12
+    addendum    = "_latex"
+    
+else:
+    
+    titlesize   = 12
+    labelsize   = 10
+    addendum    = ""
+
 subsamp     = 10 # 10
 
 def ksd(q,dq):
@@ -261,7 +279,7 @@ cb1 = matplotlib.colorbar.ColorbarBase(
     orientation = 'horizontal')
 
 # cb1.set_label("KSD to standard Gaussian", labelpad=-3)
-cb1.set_label("KSD to standard Gaussian")
+cb1.set_label("KSD to standard Gaussian", fontsize = labelsize)
 
 plt.gca().xaxis.set_ticks_position('top')
 plt.gca().xaxis.set_label_position('top')
@@ -305,7 +323,7 @@ for row in np.arange(0,6,1):
         plt.subplot(gs[row,col])
         
         if row == 0 and col == 0:
-            plt.title('$\mathbf{A}$: whitened smoothing distribution, lower block (Lorenz-63)',fontsize=10,loc="left")
+            plt.title('$\mathbf{A}$: linearly whitened smoothing distribution (Lorenz-63)',fontsize=labelsize,loc="left")
             
         if row == col:
             
@@ -333,35 +351,6 @@ for row in np.arange(0,6,1):
             plt.xlim([-3,3])
             plt.ylim([-3,3])
             
-        
-        # if col == 0 and row == 5:
-            
-        #     # Hide the right and top spines
-        #     plt.gca().spines['right'].set_visible(False)
-        #     plt.gca().spines['top'].set_visible(False)
-            
-        #     # Only show ticks on the left and bottom spines
-        #     plt.gca().yaxis.set_ticks_position('left')
-        #     plt.gca().xaxis.set_ticks_position('bottom')
-            
-        #     plt.gca().set_xticks([""])
-        #     plt.gca().set_xticklabels([""])
-            
-        #     plt.gca().set_yticks([""])
-        #     plt.gca().set_yticklabels([""])
-            
-        #     plt.xlabel("$x_{t}^{a}$")
-        #     plt.ylabel("$x_{t+1}^{c}$")
-            
-        # for 
-        
-        
-        
-        # if col < 3:
-        #     time    = "t"
-        # else:
-        #     time    = "t+1"
-        
         if col == 0 and row == 5:
             
             plt.gca().spines['right'].set_visible(False)
@@ -374,8 +363,8 @@ for row in np.arange(0,6,1):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$")
-            plt.ylabel("$x_{"+subscript_indices[row]+"}^{"+str(superscript_indices[row])+"}$")
+            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$", fontsize = labelsize)
+            plt.ylabel("$x_{"+subscript_indices[row]+"}^{"+str(superscript_indices[row])+"}$", fontsize = labelsize)
             
         elif col == 0:
             
@@ -389,7 +378,7 @@ for row in np.arange(0,6,1):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.ylabel("$x_{"+subscript_indices[row]+"}^{"+str(superscript_indices[row])+"}$")
+            plt.ylabel("$x_{"+subscript_indices[row]+"}^{"+str(superscript_indices[row])+"}$", fontsize = labelsize)
             
         elif row == 5:
             
@@ -403,7 +392,7 @@ for row in np.arange(0,6,1):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$")
+            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$", fontsize = labelsize)
             
         else:
             
@@ -446,7 +435,7 @@ for row in np.arange(0,80,1): #list(np.arange(59,70,1))+[79]: #np.arange(0,80,1)
         plt.subplot(gs[row,col])
         
         if row == 0 and col == 0:
-            plt.title('$\mathbf{B}$: whitened smoothing distribution, lower block (Lorenz-96)',fontsize=10,loc="left")
+            plt.title('$\mathbf{B}$: linearly whitened smoothing distribution (Lorenz-96)',fontsize=labelsize,loc="left")
             
         if row == col:
             
@@ -479,8 +468,8 @@ for row in np.arange(0,80,1): #list(np.arange(59,70,1))+[79]: #np.arange(0,80,1)
 # %%
     
 # Indices
-rows    = np.arange(60,60+4,1)
-cols    = np.arange(20,20+4,1)
+rows    = np.arange(64,64+4,1) # np.arange(60,60+4,1)
+cols    = np.arange(34,34+4,1) # np.arange(20,20+4,1)
 
 
 window_small = np.asarray([
@@ -500,7 +489,7 @@ inset  = gs[:35,45:].subgridspec(
     wspace  = 0.)
 
 
-superscript_indices = ["21","22","23","24","21","22","23","24"]
+superscript_indices = ["34","35","36","37","24","25","26","27"]
 subscript_indices   = ["t+1","t+1","t+1","t+1","t","t","t","t"]
 
 for row,rval in enumerate(rows):
@@ -532,8 +521,8 @@ for row,rval in enumerate(rows):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$")
-            plt.ylabel("$x_{"+subscript_indices[row+4]+"}^{"+str(superscript_indices[row+4])+"}$")
+            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$",fontsize=labelsize)
+            plt.ylabel("$x_{"+subscript_indices[row+4]+"}^{"+str(superscript_indices[row+4])+"}$",fontsize=labelsize)
             
         elif col == 0:
             
@@ -547,7 +536,7 @@ for row,rval in enumerate(rows):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.ylabel("$x_{"+subscript_indices[row+4]+"}^{"+str(superscript_indices[row+4])+"}$")
+            plt.ylabel("$x_{"+subscript_indices[row+4]+"}^{"+str(superscript_indices[row+4])+"}$",fontsize=labelsize)
             
         elif row == 3:
             
@@ -561,7 +550,7 @@ for row,rval in enumerate(rows):
             plt.gca().set_yticks([])
             plt.gca().set_yticklabels([])
             
-            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$")
+            plt.xlabel("$x_{"+subscript_indices[col]+"}^{"+str(superscript_indices[col])+"}$",fontsize=labelsize)
             
         else:
             
@@ -578,5 +567,5 @@ for row,rval in enumerate(rows):
             plt.gca().set_yticklabels([])
 
 
-plt.savefig('smoothing_comparison_triangular.png',dpi=600,bbox_inches='tight')
-plt.savefig('smoothing_comparison_triangular.pdf',dpi=600,bbox_inches='tight')
+plt.savefig('smoothing_comparison_triangular'+addendum+'.png',dpi=600,bbox_inches='tight')
+plt.savefig('smoothing_comparison_triangular'+addendum+'.pdf',dpi=600,bbox_inches='tight')
