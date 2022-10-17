@@ -10,7 +10,7 @@ from matplotlib import patches
 from matplotlib import text as mtext
 import math
 
-use_latex   = True
+use_latex   = False
 
 if use_latex:
     
@@ -25,6 +25,7 @@ if use_latex:
     
 else:
     
+    matplotlib.style.use('default')
     titlesize   = 12
     labelsize   = 10
     addendum    = ""
@@ -395,8 +396,8 @@ locrad_smoother_current = np.asarray(locrad_smoother_current,dtype=int)
 
 Nnodes  = 7
 
-fig = plt.figure(figsize=(10,9))
-gs  = matplotlib.gridspec.GridSpec(nrows=3,ncols=2,width_ratios=[1,1],height_ratios=[0.1,1,1.4])
+fig = plt.figure(figsize=(10,14))
+gs  = matplotlib.gridspec.GridSpec(nrows=4,ncols=2,width_ratios=[1,1],height_ratios=[0.1,1,1.4,1.4],hspace = 0.1)
 
 #%%
 
@@ -413,11 +414,11 @@ cb1 = matplotlib.colorbar.ColorbarBase(
     norm        = norm,
     orientation = 'horizontal')
 
-cb1.set_label("algorithm progress", labelpad=-10, fontsize = labelsize)
+cb1.set_label("algorithm progress", labelpad=-10)
 
 plt.gca().xaxis.set_ticks_position('top')
 plt.gca().xaxis.set_label_position('top')
-cb1.ax.set_xticklabels(['start', 'end'], fontsize = labelsize)  # horizontal colorbar
+cb1.ax.set_xticklabels(['start', 'end'])  # horizontal colorbar
 
 plt.gca().annotate('', xy=(0.1, 1.75), xycoords='axes fraction', xytext=(0.4, 1.75), 
             arrowprops=dict(arrowstyle = '-',color='xkcd:dark grey'))
@@ -743,7 +744,7 @@ plt.gca().scatter3D(
     zorder  = -circlepos[d,1]-1,
     label   = "updated state")
 
-plt.legend(frameon = False,borderpad=0,loc='lower right', fontsize = labelsize)
+plt.legend(frameon = False,borderpad=0,loc='lower right')
         
 # Get the vertices for the clique
 difference  = [x for x in clique_future if x not in clique_current]
@@ -906,11 +907,11 @@ plt.show()
 color1  = cmap((2)/colorcounter_max) #cmap(0.25)
 color2  = cmap((0)/colorcounter_max)#cmap(0.95)#cmap(0.75)
 
-ax.text2D(0.7, 0.5, 'clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey', fontsize = labelsize)
+# ax.text2D(0.7, 0.5, 'clique', horizontalalignment='center',
+#      verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey')
 
-ax.text2D(0.3, 0.5, 'localized \n clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=color1, fontsize = labelsize)
+ax.text2D(0.3, 0.47, 'neighorhood \n $Nb$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=color1)
 
 
 
@@ -921,17 +922,17 @@ ax.text2D(0.85, 0.85, '$\mathbf{x}_{2}$', horizontalalignment='center', fontsize
      verticalalignment='center', transform=ax.transAxes,color=cmap((2)/colorcounter_max))
 
 
-ax.text2D(0.0975, 0.535, '$x_{1}^{30}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.0975, 0.535, '$x_{1}^{30}$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
 
-ax.text2D(0.102, 0.4725, '$x_{1}^{29}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.102, 0.4725, '$x_{1}^{29}$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
 
-ax.text2D(0.112, 0.4, '$x_{1}^{28}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.112, 0.4, '$x_{1}^{28}$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
 
-ax.text2D(0.13, 0.325, '$\dots$', horizontalalignment='center', rotation = -75,
-     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.13, 0.325, '$\dots$', horizontalalignment='center', rotation = -75, fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((0)/colorcounter_max))
 
 
 plt.gca().annotate('', xy=(0., -0.01), xycoords='axes fraction', xytext=(0., 1.01), 
@@ -945,7 +946,7 @@ plt.gca().annotate('', xy=(1.01, 0.), xycoords='axes fraction', xytext=(-0.01, 0
 
 
 xs  = [0.05,   0.65]
-ys  = [1.5,   1.775]
+ys  = [1.5 - 0.04,   1.775 - 0.04]
 
 plt.gca().annotate('', xy=(.0, 1.), xycoords='axes fraction', xytext=(xs[0]+0.005, ys[1]+0.005), 
             arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.))
@@ -1242,11 +1243,11 @@ ax.set_zlim(mid_z - max_range + zoffset, mid_z + max_range + zoffset)
 
 plt.show()
 
-ax.text2D(0.5, 0.65, 'clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey', fontsize = labelsize)
+# ax.text2D(0.5, 0.65, 'clique', horizontalalignment='center',
+#      verticalalignment='center', transform=ax.transAxes,color='xkcd:dark grey')
 
-ax.text2D(0.7, 0.4, 'localized clique', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.7, 0.4, 'neighorhood $Nb$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max))
 
 
 
@@ -1258,11 +1259,11 @@ ax.text2D(0.85, 0.15, '$\mathbf{y}_{t}$', horizontalalignment='center', fontsize
 
 
 
-ax.text2D(0.51, 0.51, '$x_{t}^{20}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-2)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.51, 0.525, '$x_{t}^{20}$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-2)/colorcounter_max))
 
-ax.text2D(0.505, 0.075, '$y_{t}^{20}$', horizontalalignment='center',
-     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max), fontsize = labelsize)
+ax.text2D(0.505, 0.075, '$y_{t}^{20}$', horizontalalignment='center', fontsize = labelsize,
+     verticalalignment='center', transform=ax.transAxes,color=cmap((colorcounter-0)/colorcounter_max))
 
 
 plt.gca().annotate('', xy=(0., -0.01), xycoords='axes fraction', xytext=(0., 1.01), 
@@ -1276,7 +1277,7 @@ plt.gca().annotate('', xy=(1.01, 0.), xycoords='axes fraction', xytext=(-0.01, 0
 
 
 xs  = [0.675,   0.95]
-ys  = [1.175,   1.775]
+ys  = [1.175 - 0.04,   1.775 - 0.04]
 
 plt.gca().annotate('', xy=(.0, 1.), xycoords='axes fraction', xytext=(xs[0]+0.005, ys[1]+0.005), 
             arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.))
@@ -1325,10 +1326,258 @@ plt.gca().scatter3D(
 
 plt.legend(frameon = False,borderpad=0)
 
+#%%
+
+
+
+# plt.title("imshow")
+# plt.imshow(matrix, cmap = "jet")
+
+# # Imshow flips the y axis. Flip it again.
+# plt.gca().invert_yaxis()
+
+# # Second subplot: manual plot
+# plt.subplot(1,2,2)
+# plt.title("manual")
+# for row in range(5):
+#     for col in range(10):
+#         color   = matplotlib.cm.get_cmap("jet")((matrix[row,col]-np.min(matrix))/(np.max(matrix)-np.min(matrix)))
+#         plt.fill(
+#             np.asarray([-0.5,0.5,0.5,-0.5])+col,
+#             np.asarray([-0.5,-0.5,0.5,0.5])+row,
+#             color   = color)
+        
+# # Set equal axes aspect
+# # plt.axis("equal")
+# plt.gca().set_aspect("equal")
+# plt.gca().set_xlim(-0.5,9.5)
+# plt.gca().set_ylim(-0.5,4.5)
+
+
+
+plt.subplot(gs[3,0])
+
+plt.title(r'$\bf{D}$: smoother map structure',fontsize=labelsize,loc="left")
+
+idx_current     = np.where(locrad_smoother_current > 0)[0] - 20
+idx_future      = np.where(locrad_smoother_future > 0)[0] - 20
+
+for row in range(D):
+    
+    loc_idx_future  = idx_future+row
+    loc_idx_future[np.where(loc_idx_future < 0)]    += D
+    loc_idx_future[np.where(loc_idx_future >= D)]   -= D
+    
+    loc_idx_current  = idx_current+row
+    loc_idx_current[np.where(loc_idx_current < 0)]    += D
+    loc_idx_current[np.where(loc_idx_current >= D)]   -= D
+    
+    
+    for col in range(row+D+1):
+        
+        if col < D:
+            
+            if col in loc_idx_future:
+                
+                color   = cmap((2)/colorcounter_max)
+                
+            else:
+                
+                color   = 'xkcd:silver'
+        
+                color   = np.asarray([77.3/100, 78.8/100, 78/100]) #'xkcd:silver'
+
+        else:
+            
+            if col-D in loc_idx_current:
+                
+                color   = cmap((0)/colorcounter_max)
+                
+            else:
+                
+                color   = 'xkcd:grey'
+                
+                color   = np.asarray([57.3/100, 58.4/100, 56.9/100]) #'xkcd:grey'
+                
+        if row != 30:
+            color   = whiten(color, fac = 0.75)
+        
+        plt.fill(
+            np.asarray([0.,1,1,0.]) + col - 0.5,
+            np.asarray([0.,0,1,1]) + D + row - 0.5,
+            facecolor   = color,
+            edgecolor   = "None")
+
+        # plt.fill(
+        #     np.asarray([0.1,0.9,0.9,0.1]) + col,
+        #     np.asarray([0.1,0.1,0.9,0.9]) - row,
+        #     facecolor   = color,
+        #     edgecolor   = "None")
+
+
+plt.gca().invert_yaxis()
+
+plt.gca().set_xticks([0,20,40,60,79])
+plt.gca().set_xticklabels(["$x_{t+1}^{1}$","$x_{t+1}^{20}$","$x_{t}^{1}$","$x_{t}^{20}$","$x_{t}^{40}$"], fontsize = labelsize)
+
+plt.gca().get_xticklabels()[0].set_color(cmap((2)/colorcounter_max)) 
+plt.gca().get_xticklabels()[1].set_color(cmap((2)/colorcounter_max))
+plt.gca().get_xticklabels()[2].set_color(cmap((0)/colorcounter_max))
+plt.gca().get_xticklabels()[3].set_color(cmap((0)/colorcounter_max))
+plt.gca().get_xticklabels()[4].set_color(cmap((0)/colorcounter_max))
+
+plt.gca().set_yticks([40,49,59,69,79])
+plt.gca().set_yticklabels(["$S_{41}$","$S_{50}$","$S_{60}$","$S_{70}$","$S_{80}$"], fontsize = labelsize)
+
+plt.gca().get_yticklabels()[0].set_color(cmap((0)/colorcounter_max)) 
+plt.gca().get_yticklabels()[1].set_color(cmap((0)/colorcounter_max))
+plt.gca().get_yticklabels()[2].set_color(cmap((0)/colorcounter_max))
+plt.gca().get_yticklabels()[3].set_color(cmap((0)/colorcounter_max))
+plt.gca().get_yticklabels()[4].set_color(cmap((0)/colorcounter_max))
+
+plt.gca().set_aspect("equal")
+# plt.gca().set_xlim(-0.5,9.5)
+# plt.gca().set_ylim(-0.5,4.5)
+
+plt.gca().annotate('', xy=(0.85, 0.25), xycoords='axes fraction', xytext=(1.,1.7), 
+            arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.,ls="--"))
+
+plt.gca().annotate('', xy=(0.05, 0.25), xycoords='axes fraction', xytext=(0.,1.7), 
+            arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.,ls="--"))
+
 
 #%%
 
-# # # Save the figure
+plt.subplot(gs[3,1])
+
+plt.title(r'$\bf{E}$: filter map structure',fontsize=labelsize,loc="left")
+
+for row in range(D): #range(1+locrad_filter+locrad_filter):
+    
+    if row == 0:
+        
+        plt.fill(
+            np.asarray([0.,1,1,0.]) + 0 - 0.5,
+            np.asarray([0.,0,1,1]) + 0 - 0.5,
+            facecolor   = cmap((colorcounter)/colorcounter_max),
+            edgecolor   = "None")
+            
+        plt.fill(
+            np.asarray([0.,1,1,0.]) + 1 - 0.5,
+            np.asarray([0.,0,1,1]) + 0 - 0.5,
+            facecolor   = cmap((colorcounter-1)/colorcounter_max),
+            edgecolor   = "None")
+        
+    elif row < 1+locrad_filter+locrad_filter:
+        
+        for col in range(row+1+1):
+            
+            if col == 0:
+                
+                plt.fill(
+                    np.asarray([0.,1,1,0.]) + col - 0.5,
+                    np.asarray([0.,0,1,1]) + row - 0.5,
+                    facecolor   = "xkcd:silver",
+                    edgecolor   = "None")
+            
+            else:
+                
+                plt.fill(
+                    np.asarray([0.,1,1,0.]) + col - 0.5,
+                    np.asarray([0.,0,1,1]) + row - 0.5,
+                    facecolor   = cmap((colorcounter-1)/colorcounter_max),
+                    edgecolor   = "None")
+                
+    else:
+        
+        for col in range(row+1+1):
+            
+            if col < row+1+1-1:
+                
+                plt.fill(
+                    np.asarray([0.,1,1,0.]) + col - 0.5,
+                    np.asarray([0.,0,1,1]) + row - 0.5,
+                    facecolor   = "xkcd:silver",
+                    edgecolor   = "None")
+            
+            else:
+                
+                plt.fill(
+                    np.asarray([0.,1,1,0.]) + col - 0.5,
+                    np.asarray([0.,0,1,1]) + row - 0.5,
+                    facecolor   = "xkcd:grey",
+                    edgecolor   = "None")
+
+
+
+plt.gca().invert_yaxis()
+
+# plt.gca().set_xlim(-1,14)
+
+# plt.gca().set_xticks([0,1,2,3,4,5,6,7,8,9,10,11,12,13])
+# plt.gca().set_xticklabels(["$y_{t}^{20}$","$x_{t}^{20}$","$x_{t}^{21}$","$x_{t}^{19}$","$x_{t}^{22}$","$x_{t}^{18}$","$x_{t}^{23}$","$x_{t}^{17}$","$x_{t}^{24}$","$x_{t}^{16}$","$x_{t}^{25}$","$x_{t}^{15}$","$x_{t}^{26}$","$x_{t}^{14}$"],rotation=45)
+
+
+# plt.gca().set_xticks([0,5,10])
+# plt.gca().set_xticklabels(["$y_{t}^{20}$","$x_{t}^{18}$","$x_{t}^{25}$"],rotation=45)
+
+
+plt.gca().set_xticks([0,5,10,15,20,25,30,35,40])
+plt.gca().set_xticklabels(["$y_{t}^{20}$","$x_{t}^{18}$","$x_{t}^{25}$","$x_{t}^{13}$","$x_{t}^{30}$","$x_{t}^{8}$","$x_{t}^{35}$","$x_{t}^{3}$","$x_{t}^{40}$"],fontsize = labelsize)
+
+#                5              10             15
+# 20 20 21 19 22 18 23 17 24 16 25 15 26 14 27 13 
+
+for idx,tick in enumerate(plt.gca().get_xticklabels()):
+    if idx == 0:
+        plt.gca().get_xticklabels()[idx].set_color(cmap((colorcounter)/colorcounter_max)) 
+    elif idx < 3:
+        plt.gca().get_xticklabels()[idx].set_color(cmap((colorcounter-1)/colorcounter_max)) 
+    else:
+        plt.gca().get_xticklabels()[idx].set_color("xkcd:grey") 
+
+
+plt.gca().set_aspect("equal")
+
+
+plt.gca().set_yticks([0,8,18,28,38])
+plt.gca().set_yticklabels(["$S_{2}$","$S_{10}$","$S_{20}$","$S_{30}$","$S_{40}$"], fontsize = labelsize)
+
+
+
+plt.plot(
+    [-0.5,40.5],
+    [12.5,12.5],
+    color   = "xkcd:dark grey",
+    ls      = "--")
+
+plt.gca().text(
+    12.5,27.5, 'identity \n maps', ha="center", va="center",zorder=10,color="k",fontsize=labelsize)
+
+
+plt.gca().annotate('', xy=(1., 0.98), xycoords='axes fraction', xytext=(1.,1.12), 
+            arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.,ls="--"))
+
+plt.gca().annotate('', xy=(0., 0.98), xycoords='axes fraction', xytext=(0.,1.12), 
+            arrowprops=dict(arrowstyle = '-',color='xkcd:grey',lw=1.,ls="--"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%
+
+# Save the figure
 plt.savefig('graph_localized'+addendum+'.png',dpi=600,bbox_inches='tight')
 plt.savefig('graph_localized'+addendum+'.pdf',dpi=600,bbox_inches='tight')
 
