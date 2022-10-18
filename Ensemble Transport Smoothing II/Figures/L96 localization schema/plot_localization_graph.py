@@ -391,6 +391,118 @@ locrad_smoother_current = np.asarray(locrad_smoother_current,dtype=int)
 # del locrads_smoother_future, locrads_smoother_current, locrads_filter
 
 
+# This function constructs the map component function definitions for the filter
+def get_transport_map_functions_filter(D,localization_radius,order_nonmon,order_mon,obs_offset):
+    
+    # Pre-allocate empty lists for the monotone and nonmonotone parts of 
+    # every map component
+    monotone    = []
+    nonmonotone = []
+    
+    # Allocate the index list, assuming alternating index permutations:
+    # 0 -1 1 -2 2 -3 3 -4 4 etc.
+    indexlist   = []
+    
+    # We implement separate, low-dimensional, sparsified filtering updates
+    # As such, the map component doesn't necessarily span all of D, but 
+    # only as far as the localization radius permits
+    for d in range(np.min([D,1 + 2*localization_radius])):
+        
+        # Create a list with the state indices so far
+        if d == 0:
+            indexlist.append(0)
+        elif d == 1:
+            indexlist.append(1)
+        elif np.sign(indexlist[-1]) == 1:
+            indexlist.append(- indexlist[-1])
+        else:
+            indexlist.append(-indexlist[-1]+1)
+        
+        # ---------------------------------------------------------------------
+        # Start with the nonmonotone part
+        # ---------------------------------------------------------------------
+         
+        # Create an empty list for this map component's nonmonotone terms
+        nonmonotone.append([])
+        
+        # Add the constant term
+        nonmonotone[-1].append([])
+        
+        # Only the first dimension depends on the observation; this requires
+        # permutating the state vector (done outside)
+        if d == 0:
+        
+            # The d-th map map component contains terms up to dimension d
+            for i in np.arange(0,d+obs_offset,1):
+                
+                # Add terms in polynomial order
+                for o in np.arange(1,order_nonmon+1,1):
+                
+                    # Add term for the current polynomial order
+                    if o > 1: # If it's nonlinear, turn it into a Hermite function
+                        nonmonotone[-1].append([i]*o+['HF'])
+                    else: # If it's linear, don't
+                        nonmonotone[-1].append([i]*o)
+                    
+    
+        # The other dimensions dont
+        else:
+            
+            # The d-th map map component contains terms up to dimension d
+            for i in np.arange(1,d+obs_offset,1):
+                
+                # Is this term in the neighbour list?
+                if np.abs(indexlist[i-1] - indexlist[-1]) < localization_radius:
+                
+                    # Add terms in polynomial order
+                    for o in np.arange(1,order_nonmon+1,1):            
+                    
+                        # Add term for the current polynomial order
+                        if o > 1:
+                            nonmonotone[-1].append([i]*o+['HF'])
+                        else:
+                            nonmonotone[-1].append([i]*o)
+    
+        # ---------------------------------------------------------------------
+        # Now do the monotone part
+        # ---------------------------------------------------------------------
+    
+        # Create an empty list for this map component's monotone terms
+        monotone.append([])
+        
+        if order_mon == 1 or d != 0: # Linear terms are added as is
+            
+            # Add the linear term
+            monotone[-1].append([d+obs_offset])
+            
+        else: # For nonlinear monotone terms, add order-1 integrated RBFs
+        
+            # Add left edge term
+            monotone[-1].append('LET '+str(d+obs_offset))
+            
+            # Add integrated RBFs to taste
+            for o in np.arange(1,order_mon,1):
+            
+                # Add term for the current polynomial order
+                monotone[-1].append('iRBF '+str(d+obs_offset))
+                
+            # Add left edge term
+            monotone[-1].append('RET '+str(d+obs_offset))
+                
+    # print(indexlist)
+                
+    return nonmonotone,monotone
+
+
+# Get the filtering transport map components
+# We will later use those to plot the map order matrix
+nonmonotone, monotone = get_transport_map_functions_filter(
+    D                   = D,
+    localization_radius = locrad_filter,
+    order_nonmon        = 1, 
+    order_mon           = 1,
+    obs_offset          = 1)    
+
 
 #%%
 
@@ -414,15 +526,15 @@ cb1 = matplotlib.colorbar.ColorbarBase(
     norm        = norm,
     orientation = 'horizontal')
 
-cb1.set_label("algorithm progress", labelpad=-10)
+cb1.set_label("algorithm progress", labelpad=-10, fontsize = labelsize)
 
 plt.gca().xaxis.set_ticks_position('top')
 plt.gca().xaxis.set_label_position('top')
-cb1.ax.set_xticklabels(['start', 'end'])  # horizontal colorbar
+cb1.ax.set_xticklabels(['start', 'end'], fontsize = labelsize)  # horizontal colorbar
 
-plt.gca().annotate('', xy=(0.1, 1.75), xycoords='axes fraction', xytext=(0.4, 1.75), 
+plt.gca().annotate('', xy=(0.1, 1.5), xycoords='axes fraction', xytext=(0.4, 1.5), 
             arrowprops=dict(arrowstyle = '-',color='xkcd:dark grey'))
-plt.gca().annotate('', xy=(0.9, 1.75), xycoords='axes fraction', xytext=(0.6, 1.75), 
+plt.gca().annotate('', xy=(0.9, 1.5), xycoords='axes fraction', xytext=(0.6, 1.5), 
             arrowprops=dict(arrowstyle = '->',color='xkcd:dark grey'))
 
 plt.subplot(gs[1,:])
@@ -565,15 +677,6 @@ plt.tick_params(left=False,
                 bottom=False,
                 labelleft=False,
                 labelbottom=False)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -744,7 +847,7 @@ plt.gca().scatter3D(
     zorder  = -circlepos[d,1]-1,
     label   = "updated state")
 
-plt.legend(frameon = False,borderpad=0,loc='lower right')
+plt.legend(frameon = False,borderpad=0,loc='lower right', fontsize = labelsize)
         
 # Get the vertices for the clique
 difference  = [x for x in clique_future if x not in clique_current]
@@ -1324,7 +1427,7 @@ plt.gca().scatter3D(
     zorder  = -circlepos[d,1]-1,
     label   = "updated states")
 
-plt.legend(frameon = False,borderpad=0)
+plt.legend(frameon = False,borderpad=0, fontsize = labelsize)
 
 #%%
 
@@ -1468,7 +1571,7 @@ for row in range(D): #range(1+locrad_filter+locrad_filter):
             facecolor   = cmap((colorcounter-1)/colorcounter_max),
             edgecolor   = "None")
         
-    elif row < 1+locrad_filter+locrad_filter:
+    elif row < len(nonmonotone):
         
         for col in range(row+1+1):
             
@@ -1480,12 +1583,17 @@ for row in range(D): #range(1+locrad_filter+locrad_filter):
                     facecolor   = "xkcd:silver",
                     edgecolor   = "None")
             
-            else:
+            elif col < row+1:
+                
+                if [col] in nonmonotone[row]:
+                    color   = cmap((colorcounter-1)/colorcounter_max)
+                else:
+                    color   = "xkcd:silver"
                 
                 plt.fill(
                     np.asarray([0.,1,1,0.]) + col - 0.5,
                     np.asarray([0.,0,1,1]) + row - 0.5,
-                    facecolor   = cmap((colorcounter-1)/colorcounter_max),
+                    facecolor   = color,
                     edgecolor   = "None")
                 
     else:
