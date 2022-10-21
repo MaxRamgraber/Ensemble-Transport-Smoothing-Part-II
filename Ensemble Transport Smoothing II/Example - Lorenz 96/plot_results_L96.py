@@ -16,7 +16,7 @@ import os
 import matplotlib
 from matplotlib import gridspec
 
-use_latex   = True
+use_latex   = False
 
 if use_latex:
     
@@ -29,6 +29,7 @@ if use_latex:
     
 else:
     
+    matplotlib.style.use('default')
     titlesize   = 12
     labelsize   = 10
     addendum    = ""
@@ -292,7 +293,10 @@ colors  = ['xkcd:cerulean','xkcd:grass green','xkcd:goldenrod','xkcd:orangish re
 
 plt.subplot(gs[0,0])
 
-plt.title("$\mathbf{A}$: Lorenz-96 ensemble mean RMSE",loc="left", fontsize = titlesize)
+plt.title("$\mathbf{A}$: filters versus smoothers",loc="left", fontsize = titlesize)
+
+marker  = ["","x","+","v","","^"]
+altmarker  = ["","x","*","o","","s"]
 
 for oi,order in enumerate(orders): 
     
@@ -312,7 +316,7 @@ for oi,order in enumerate(orders):
         else:
             colororder = 3
             
-        plt.plot(Ns,RMSEval_f, marker = 'x',label = 'filter (order '+str(order)+')',color = colors[colororder],ls='--')
+        plt.plot(Ns,RMSEval_f, marker = marker[order[0]],label = 'filter (order '+str(order)+')',color = colors[colororder],ls='--')
                    
         RMSE    = copy.copy(RMSEs[:,:,:,:,oi])
         RMSE    = np.nanmean(RMSE,axis=0)
@@ -326,9 +330,9 @@ for oi,order in enumerate(orders):
             print('order '+str(order)+' N '+str(N)+ ' '+ str(np.where(RMSE[ni,...] == RMSEval[-1])))
             
         if order[0] == order[1]:
-            plt.plot(Ns,RMSEval, marker = 'x',label = 'smoother (order '+str(order)+')',color = colors[colororder])
+            plt.plot(Ns,RMSEval, marker = marker[order[0]],label = 'smoother (order '+str(order)+')',color = colors[colororder])
         else:
-            plt.plot(Ns,RMSEval, marker = 'x',label = 'smoother (order '+str(order)+')',color = colors[colororder],alpha = 0.5)
+            plt.plot(Ns,RMSEval, marker = altmarker[order[0]],label = 'smoother (order '+str(order)+')',color = colors[colororder],alpha = 0.5)
 
 # plt.xlabel("ensemble size")
 plt.ylabel("time-averaged ensemble mean RMSE", fontsize = labelsize)
@@ -345,7 +349,10 @@ plt.yticks(fontsize=labelsize)
 
 plt.subplot(gs[1,0])
 
-plt.title("$\mathbf{B}$: linear vs nonlinear smoothers",loc="left", fontsize = titlesize)
+plt.title("$\mathbf{B}$: linear versus nonlinear smoothers",loc="left", fontsize = titlesize)
+
+marker  = ["","x","+","v","","^"]
+altmarker  = ["","x","*","o","","s"]
 
 for oi,order in enumerate(orders): 
     
@@ -366,9 +373,9 @@ for oi,order in enumerate(orders):
         print('order '+str(order)+' N '+str(N)+ ' '+ str(np.where(RMSE[ni,...] == RMSEval[-1])))
         
     if order[0] == order[1]:
-        plt.plot(Ns,RMSEval, marker = 'x',label = 'smoother (order '+str(order)+')',color = colors[colororder])
+        plt.plot(Ns,RMSEval, marker = marker[order[0]],label = 'smoother ('+str(order)+' )',color = colors[colororder])
     else:
-        plt.plot(Ns,RMSEval, marker = 'x',label = 'smoother (order '+str(order)+')',color = colors[colororder],alpha = 0.5)
+        plt.plot(Ns,RMSEval, marker = altmarker[order[0]],label = 'smoother (order '+str(order)+')',color = colors[colororder],alpha = 0.5)
     
 plt.xlabel("model evaluations", fontsize = labelsize)
 plt.ylabel("time-averaged ensemble mean RMSE", fontsize = labelsize)
@@ -397,8 +404,8 @@ gs2 = gridspec.GridSpecFromSubplotSpec(
 plt.subplot(gs2[0,0])
 
 legend_elements = [
-    Line2D([0], [0], color='xkcd:cerulean', marker = 'x', label='EnTF (order 1)', ls='--'),
-    Line2D([0], [0], color='xkcd:cerulean', marker = 'x', label='EnTS (order 1)')]
+    Line2D([0], [0], color='xkcd:cerulean', marker = 'x', label=r'EnTF (1)', ls='--'),
+    Line2D([0], [0], color='xkcd:cerulean', marker = 'x', label=r'EnTS (1 - 1)')]
 
 plt.legend(handles=legend_elements, loc='center left',frameon=False, fontsize = labelsize)
 
@@ -409,9 +416,9 @@ plt.subplot(gs2[1,0])
 
 
 legend_elements = [
-    Line2D([0], [0], color='xkcd:grass green', marker = 'x', label='EnTF (order 2)', ls='--'),
-    Line2D([0], [0], color='xkcd:grass green', marker = 'x', label='EnTS (order 2)'),
-    Line2D([0], [0], color='xkcd:grass green', marker = 'x', label='EnTS (order 1)', alpha = 0.5)]
+    Line2D([0], [0], color='xkcd:grass green', marker = '+', label=r'EnTF (2)', ls='--'),
+    Line2D([0], [0], color='xkcd:grass green', marker = '+', label=r'EnTS (2 - 2)'),
+    Line2D([0], [0], color='xkcd:grass green', marker = '*', label=r'EnTS (2 - 1)', alpha = 0.5)]
 
 plt.legend(handles=legend_elements, loc='center left',frameon=False, fontsize = labelsize)
 
@@ -421,9 +428,9 @@ plt.axis('off')
 plt.subplot(gs2[2,0])
 
 legend_elements = [
-    Line2D([0], [0], color='xkcd:goldenrod', marker = 'x', label='EnTF (order 3)', ls='--'),
-    Line2D([0], [0], color='xkcd:goldenrod', marker = 'x', label='EnTS (order 3)'),
-    Line2D([0], [0], color='xkcd:goldenrod', marker = 'x', label='EnTS (order 1)', alpha = 0.5)]
+    Line2D([0], [0], color='xkcd:goldenrod', marker = 'v', label=r'EnTF (3)', ls='--'),
+    Line2D([0], [0], color='xkcd:goldenrod', marker = 'v', label=r'EnTS (3 - 3)'),
+    Line2D([0], [0], color='xkcd:goldenrod', marker = 'o', label=r'EnTS (3 - 1)', alpha = 0.5)]
 
 plt.legend(handles=legend_elements, loc='center left',frameon=False, fontsize = labelsize)
 
@@ -433,11 +440,12 @@ plt.axis('off')
 plt.subplot(gs2[3,0])
 
 legend_elements = [
-    Line2D([0], [0], color='xkcd:orangish red', label='EnTF (order 5)', marker = 'x', ls='--'),
-    Line2D([0], [0], color='xkcd:orangish red', label='EnTS (order 5)', marker = 'x'),
-    Line2D([0], [0], color='xkcd:orangish red', label='EnTS (order 1)', marker = 'x', alpha = 0.5)]
+    Line2D([0], [0], color='xkcd:orangish red', label=r'EnTF (5)', marker = '^', ls='--'),
+    Line2D([0], [0], color='xkcd:orangish red', label=r'EnTS (5 - 5)', marker = '^'),
+    Line2D([0], [0], color='xkcd:orangish red', label=r'EnTS (5 - 1)', marker = 's', alpha = 0.5)]
 
 plt.legend(handles=legend_elements, loc='center left',frameon=False, fontsize = labelsize)
+
 
 plt.axis('off')
 
@@ -513,8 +521,8 @@ else:
 plt.plot(
     Ns,
     RMSEval_f,
-    label = 'EnTF (order 5)',
-    marker = 'x',
+    label = 'EnTF (5)',
+    marker = '^',
     color = 'xkcd:orangish red',
     ls='--')
 
@@ -532,8 +540,8 @@ for ni,N in enumerate(Ns):
 plt.plot(
     Ns,
     RMSEval,
-    label='EnTS (order 5)',
-    marker = 'x',
+    label='EnTS (5-5)',
+    marker = '^',
     color = 'xkcd:orangish red')
 
 plt.legend(frameon=False,loc='upper right', fontsize = labelsize)
@@ -616,8 +624,8 @@ else:
 plt.plot(
     Ns,
     RMSEval_f,
-    label = 'EnTF (order 5)',
-    marker = 'x',
+    label = 'EnTF (5)',
+    marker = '^',
     color = 'xkcd:orangish red',
     ls='--')
            
@@ -635,8 +643,8 @@ for ni,N in enumerate(Ns):
 plt.plot(
     Ns,
     RMSEval,
-    label='EnTS (order 5)',
-    marker = 'x',
+    label='EnTS (5-5)',
+    marker = '^',
     color = 'xkcd:orangish red')
 
 plt.legend(frameon=False,loc='upper right', fontsize = labelsize)
