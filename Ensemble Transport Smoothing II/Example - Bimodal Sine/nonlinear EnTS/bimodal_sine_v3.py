@@ -29,13 +29,13 @@ if __name__ == '__main__':
         labelsize   = 10
         addendum    = ""
     
-    # Find the current path
-    root_directory = os.path.dirname(os.path.realpath(__file__))
-
     # This is a small auxiliary function converting "1" to "1st" and "2" to "2nd"
     # and so on, for printing later on
     ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
     
+    # Find the current path
+    root_directory = os.path.dirname(os.path.realpath(__file__))
+
     # Define and initialize a random seed
     random_seed     = 0
     np.random.seed(random_seed)
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     pri_sd              = 0.2
     
     # Define the order for the filter and smoother
-    order_filter        = 1
-    order_smoother      = 1
+    order_filter        = 2
+    order_smoother      = 2
     
     # =========================================================================
     # Create or load observations and synthetic reference
@@ -158,14 +158,21 @@ if __name__ == '__main__':
     # Delete any existing transport map objects
     if "tm" in globals():
         del tm
-
+        
     # Parameterize the transport map
     tm     = transport_map(
         monotone                = monotone_filter,          # Monotone terms of the map components
         nonmonotone             = nonmonotone_filter,       # Nonmonotone terms of the map components
         X                       = copy.copy(map_input),     # Training samples
-        monotonicity            = "separable monotonicity", # Monotonicity type - separable is sufficient for linear maps
-        standardize_samples     = True)                     # Flag whether samples are standardized; should almost always be True 
+        monotonicity            = "integrated rectifier",   # Monotonicity type - integration required for cross-terms
+        ST_scale_mode           = "static",                 # RBF scales have a static bandwith, defined below
+        ST_scale_factor         = 3.,                       # Bandwidth of the RBFs
+        standardize_samples     = True,                     # Flag whether samples are standardized; should almost always be True
+        quadrature_input        = {                         # Keywords for the Gaussian quadrature used for integration
+            'order'             : 5,
+            'adaptive'          : False,
+            'threshold'         : 1E-9,
+            'verbose'           : False}) 
         
     # Start the filtering
     for t in np.arange(0,T,1):
@@ -251,6 +258,108 @@ if __name__ == '__main__':
     # Smoothing
     # =========================================================================
 
+    # Define the map component structure
+    monotone_smoother       = []
+    nonmonotone_smoother    = []
+
+    monotone_smoother.append(['RBF 0']*order_smoother)
+    nonmonotone_smoother.append([[]]+['RBF 0']*order_smoother)
+
+    for order in range(order_filter):
+        
+        monotone_smoother[-1].    append('RBF 1')
+        
+
+    # -----------------------------------------------------------------
+    # Prepare the backwards smoother
+    # -----------------------------------------------------------------
+    
+    # Initialize the array for the analysis
+    Z_s         = np.zeros((T,N,D))
+    Z_s         = copy.copy(Z_a)
+    
+    # Initialize the list for the RMSE
+    RMSE_list   = []
+    
+    # Calculate the last marginal's RMSE
+    RMSE = np.sqrt(np.mean(np.minimum(np.abs(Z_s[T-1,...] - synthetic_truth[t,:]),np.abs(Z_s[T-1,...] + synthetic_truth[t,:]))**2))
+    RMSE_list.append(RMSE)
+    
+    # Create dummy map input
+    map_input = copy.copy(np.column_stack((
+        Z_f[T-1,:,:],    # First D dimensions: forecasted states
+        Z_a[T-2,...])))  # Next D dimensions: filtering analysis states
+    
+    # Delete any existing map objects
+    if "tm" in globals():
+        del tm
+        
+    # Parameterize the transport map
+    tm     = transport_map(
+        monotone                = monotone_smoother,        # Monotone terms of the map components
+        nonmonotone             = nonmonotone_smoother,     # Nonmonotone terms of the map components
+        X                       = copy.copy(map_input),     # Training samples
+        monotonicity            = "integrated rectifier",   # Monotonicity type - integration required for cross-terms
+        ST_scale_mode           = "static",                 # RBF scales have a static bandwith, defined below
+        ST_scale_factor         = 3,                        # Bandwidth of the RBFs
+        standardize_samples     = True,                     # Flag whether samples are standardized; should almost always be True
+        quadrature_input        = {                         # Keywords for the Gaussian quadrature used for integration
+            'order'             : 5,
+            'adaptive'          : False,
+            'threshold'         : 1E-9,
+            'verbose'           : False})
+
+
+    # Now start smoothing; move backwards through time
+    for t in range(T-2,-1,-1):
+        
+        # Assemble the training samples
+        map_input = copy.copy(np.column_stack((
+            Z_f[t+1,:,:],       # First D dimensions: forecasted states
+            Z_a[t,...])))       # Next D dimensions: filtering analysis states
+    
+        # We want to condition on the previous smoothing marginal
+        X_star = copy.copy(
+            Z_s[t+1,...])
+        
+        # Reset the map
+        tm.reset(map_input)
+        
+        # Start optimizing the map
+        start   = time.time()
+        tm.optimize()
+        end     = time.time()
+        print('Optimization took '+str(end-start)+' seconds.')
+        
+        # Push forward
+        norm_samples = tm.map(map_input)
+        
+        # Pull back
+        ret = tm.inverse_map(
+            X_star      = X_star,
+            Z           = norm_samples) # Only necessary when heuristic is deactivated
+
+        # Save the results
+        Z_s[t,...]    = copy.copy(ret)
+
+        # Calculate RMSE
+        RMSE = np.sqrt(np.mean(np.minimum(np.abs(Z_s[t,...] - synthetic_truth[t,:]),np.abs(Z_s[t,...] + synthetic_truth[t,:]))**2))
+        RMSE_list.append(RMSE)
+        
+        # Print the RMSE results obtained thus far
+        print('Average ensemble RMSE (N='+str(N)+',t='+str(t)+'/'+str(T)+') is '+str(RMSE)+ ' | Average so far: '+str(np.mean(RMSE_list)))
+        
+    # Declare victory
+    print('Computations finished.')
+    
+    
+    
+    #%%
+    
+    # -------------------------------------------------------------------------
+    # Linear smoothing (nonlinear filtering basis)
+    # -------------------------------------------------------------------------
+
     # Initialize the array for the analysis
     Z_s_l      = np.zeros((T,N,D))
     Z_s_l      = copy.copy(Z_a)
@@ -328,16 +437,16 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------
     
     # Initialize a figure with specified size
-    plt.figure(figsize=(16,6))
+    plt.figure(figsize=(16,9))
     
     # Define subplot structure
     gs  = GridSpec(
         nrows           = 2,
         ncols           = 2,
         width_ratios    = [10,1],
-        height_ratios   = [1,1],
+        height_ratios   = [1,2],
         wspace          = 0,
-        hspace          = 0.6)
+        hspace          = 0.4)
     
     # Enter the first subplot
     plt.subplot(gs[0,0])
@@ -350,7 +459,7 @@ if __name__ == '__main__':
     plt.scatter(np.arange(T),observations,1,color='xkcd:cerulean', label = 'observations')
 
     # Plot the true state
-    plt.plot(np.arange(T),synthetic_truth,color='xkcd:crimson',alpha=0.5, label = 'true state',lw = 2)
+    plt.plot(np.arange(T),synthetic_truth,color='xkcd:crimson',alpha=0.5, label = 'true state', lw = 2)
     
     # Define the axis limits
     ylims   = [-2,2]
@@ -358,7 +467,7 @@ if __name__ == '__main__':
     plt.xlim([0,500])
     
     # Label the axes
-    plt.title("linear ensemble transport filter", fontsize = labelsize)
+    plt.title("nonlinear ensemble transport filter", fontsize = labelsize)
     plt.ylabel("state", fontsize = labelsize)
     plt.xlabel("time step", fontsize = labelsize)
     
@@ -368,19 +477,26 @@ if __name__ == '__main__':
                        Line2D([0], [0], color='xkcd:crimson', lw=1, label='true state'),
                        Line2D([0], [0], marker='o', color='w', label='observations',
                               markerfacecolor='xkcd:cerulean', markersize=5)]
-    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right', fontsize = labelsize)
+    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = True, loc = 'upper right', facecolor='white', framealpha=0.5, edgecolor = "k")
     
+    plt.plot(
+        [125,125],
+        [-2,2],
+        color   = 'xkcd:dark grey',
+        ls      = '--')
+    
+    # Define a position in subplot dimensiojs
     xpos    = [-0.05,1.12]
-    ypos    = [-0.275,1.15]
+    ypos    = [-0.25,1.15]
     xdif    = np.abs(np.diff(xpos))
     ydif    = np.abs(np.diff(ypos))
     
-
-    
+    # Label this subplot
     plt.text(xpos[0],ypos[1]+0.1,r'$\bf{A}$: Filter', 
         transform=plt.gca().transAxes, fontsize = titlesize,
         verticalalignment='top',horizontalalignment='left')
     
+    # Draw a grey box around it
     plt.gca().annotate('', xy=(xpos[0], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[1]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
     
@@ -392,12 +508,6 @@ if __name__ == '__main__':
     
     plt.gca().annotate('', xy=(xpos[1], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[0]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
-    
-    plt.plot(
-        [125,125],
-        [-2,2],
-        color   = 'xkcd:dark grey',
-        ls      = '--')
     
     plt.xticks(fontsize=labelsize)
     plt.yticks(fontsize=labelsize)
@@ -429,22 +539,34 @@ if __name__ == '__main__':
     xlim    = plt.gca().get_xlim()
     plt.gca().set_xlim([0,xlim[-1]*1.1])
     
+    plt.plot(
+        [0, xlim[-1]*1.1],
+        [synthetic_truth[125],synthetic_truth[125]],
+        color   = 'xkcd:crimson')
+    
     # Remove all axis ticks
     plt.tick_params(left=False,
                     bottom=False,
                     labelleft=False,
                     labelbottom=False)
     
-    plt.plot(
-        [0, xlim[-1]*1.1],
-        [synthetic_truth[125],synthetic_truth[125]],
-        color   = 'xkcd:crimson')
+    
+    
+    
+    
     
     
     # -------------------------------------------------------------------------
-
-    # Enter the second subplot
-    plt.subplot(gs[1,0])
+    
+    # Subdivide the second subplot
+    gs2     = gs[1,:].subgridspec(
+        nrows   = 2, 
+        ncols   = 2,
+        wspace  = 0,
+        width_ratios = [10,1])
+    
+    # Enter the first of the subdivided subplots
+    plt.subplot(gs2[0,0])
     
     # Scatter the linear smoothing marginals
     for n in range(N):
@@ -454,15 +576,16 @@ if __name__ == '__main__':
     plt.scatter(np.arange(T),observations,1,color='xkcd:cerulean')
     
     # Plot the true state
-    plt.plot(np.arange(T),synthetic_truth,color='xkcd:crimson',alpha=0.5,lw = 2)
+    plt.plot(np.arange(T),synthetic_truth,color='xkcd:crimson', alpha=0.5, lw = 2)
     
     # Define the axis limits
     plt.ylim(ylims)
     plt.xlim([0,500])
+    plt.gca().set_xticklabels([])
     
     # Label the axes
-    plt.title("linear ensemble transport smoother", fontsize = labelsize)
-    plt.ylabel("state")
+    plt.title("linear ensemble transport smoother (based on nonlinear filter)", fontsize = labelsize)
+    plt.ylabel("state", fontsize = labelsize)
     
     # Create a custom legend
     legend_elements = [Line2D([0], [0], marker='o', color='w', label='smoothing posterior samples',
@@ -470,20 +593,26 @@ if __name__ == '__main__':
                        Line2D([0], [0], color='xkcd:crimson', lw=1, label='true state'),
                        Line2D([0], [0], marker='o', color='w', label='observations',
                               markerfacecolor='xkcd:cerulean', markersize=5)]
-    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = False, loc = 'upper right', fontsize = labelsize)
+    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = True, loc = 'upper right', fontsize = labelsize, facecolor='white', framealpha=0.5, edgecolor = "k")
     
     # Define a position in subplot dimensions
     xpos    = [-0.05,1.12]
-    ypos    = [-0.275,1.15]
+    ypos    = [-1.48,1.15]
     xdif    = np.abs(np.diff(xpos))
     ydif    = np.abs(np.diff(ypos))
     
+    plt.plot(
+        [125,125],
+        [-2,2],
+        color   = 'xkcd:dark grey',
+        ls      = '--')
+    
     # Label the subplot
-    plt.text(xpos[0],ypos[1]+0.1,r'$\bf{B}$: Smoother', 
-        transform=plt.gca().transAxes, fontsize = titlesize,
+    plt.text(xpos[0],ypos[1]+0.1,r'$\bf{B}$: Smoothers', 
+        transform=plt.gca().transAxes, fontsize=titlesize,
         verticalalignment='top',horizontalalignment='left')
     
-    # Draw a grey box around the subplot
+    # Draw a grey box around both subdivided subplots
     plt.gca().annotate('', xy=(xpos[0], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[1]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
     
@@ -496,23 +625,10 @@ if __name__ == '__main__':
     plt.gca().annotate('', xy=(xpos[1], ypos[0]), xycoords='axes fraction', xytext=(xpos[0], ypos[0]), 
                         arrowprops=dict(color='xkcd:silver',headlength=1,headwidth=0,width=1))
     
-    
-    # Label the subplot and axes
-    plt.title("linear ensemble transport smoother", fontsize = labelsize)
-    plt.ylabel("state", fontsize = labelsize)
-    plt.xlabel("time step", fontsize = labelsize)
-
-    plt.plot(
-        [125,125],
-        [-2,2],
-        color   = 'xkcd:dark grey',
-        ls      = '--')
-    
-    
     plt.xticks(fontsize=labelsize)
     plt.yticks(fontsize=labelsize)
     
-    plt.subplot(gs[1,1])
+    plt.subplot(gs2[0,1])
     
     resolution  = 31
     binpos      = np.linspace(-2,2,resolution+1)[1:]
@@ -550,7 +666,88 @@ if __name__ == '__main__':
                     labelleft=False,
                     labelbottom=False)
     
+    
+    
+    # -------------------------------------------------------------------------
+    
+    # Enter the second subdivided subplot
+    plt.subplot(gs2[1,0])
+    
+    # Scatter the nonlinear smoothing marginal samples
+    for n in range(N):
+        plt.scatter(np.arange(T),Z_s[:,n,0],1,color='xkcd:silver',alpha=0.01)
+    
+    # Scatter the observations
+    plt.scatter(np.arange(T),observations,1,color='xkcd:cerulean')
+    
+    # Plot the true state
+    plt.plot(np.arange(T),synthetic_truth,color='xkcd:crimson', alpha=0.5, lw = 2)
+    
+    # Define the axis limits
+    plt.ylim(ylims)
+    plt.xlim([0,500])
+    
+    # Label the subplot and axes
+    plt.title("nonlinear ensemble transport smoother (based on nonlinear filter)", fontsize = labelsize)
+    plt.ylabel("state", fontsize = labelsize)
+    plt.xlabel("time step", fontsize = labelsize)
+
+    # Create a custom legend
+    legend_elements = [Line2D([0], [0], marker='o', color='w', label='smoothing posterior samples',
+                              markerfacecolor='xkcd:silver', markersize=5),
+                       Line2D([0], [0], color='xkcd:crimson', lw=1, label='true state'),
+                       Line2D([0], [0], marker='o', color='w', label='observations',
+                              markerfacecolor='xkcd:cerulean', markersize=5)]
+    plt.gca().legend(handles=legend_elements, ncol = 4, frameon = True, loc = 'upper right', fontsize = labelsize, facecolor='white', framealpha=0.5, edgecolor = "k")
+    
+    plt.plot(
+        [125,125],
+        [-2,2],
+        color   = 'xkcd:dark grey',
+        ls      = '--')
+    
+    plt.xticks(fontsize=labelsize)
+    plt.yticks(fontsize=labelsize)
+    
+    plt.subplot(gs2[1,1])
+    
+    resolution  = 31
+    binpos      = np.linspace(-2,2,resolution+1)[1:]
+    binpos      -= (binpos[1]-binpos[0])/2
+    binwidth    = binpos[1]-binpos[0]
+    bins        = [[x-binwidth/2,x+binwidth/2] for x in binpos]
+    
+    # Get the indices in the bin, sort them by their y position
+    indices = []
+    for ind in [np.where(np.logical_and(Z_s[125,:,0] >= bn[0],Z_s[125,:,0] < bn[1])) for bn in bins]:
+        indices.append(ind[0])
+    
+    # Plot manually
+    for bni,bn in enumerate(bins):
+        for j,ind in enumerate(indices[bni]):
+            bnred   = binwidth*0.1
+            plt.fill(
+                [j,j,j+1,j+1],
+                [bn[0]+bnred,bn[1]-bnred,bn[1]-bnred,bn[0]+bnred],
+                color = 'xkcd:dark grey')
+    
+    plt.ylim([-2,2])
+    
+    xlim    = plt.gca().get_xlim()
+    plt.gca().set_xlim([0,xlim[-1]*1.1])
+    
+    plt.plot(
+        [0, xlim[-1]*1.1],
+        [synthetic_truth[125],synthetic_truth[125]],
+        color   = 'xkcd:crimson')
+    
+    # Remove all axis ticks
+    plt.tick_params(left=False,
+                    bottom=False,
+                    labelleft=False,
+                    labelbottom=False)
+    
     # Save the figure
-    plt.savefig('bimodal_smoother_linear'+addendum+'.png',dpi = 300,bbox_inches='tight')
+    plt.savefig('bimodal_smoother'+addendum+'.png',dpi = 300,bbox_inches='tight')
         
     

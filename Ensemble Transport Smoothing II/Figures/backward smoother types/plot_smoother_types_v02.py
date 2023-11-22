@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-use_latex   = True
+use_latex   = False
 
 if use_latex:
     
@@ -30,8 +30,8 @@ plt.close('all')
 
 Nnodes  = 5
 
-plt.figure(figsize=(12,4.5))
-gs  = matplotlib.gridspec.GridSpec(nrows=3,ncols=4,height_ratios=[0.1,0.5,1.],wspace=0.1,hspace = 0.)
+plt.figure(figsize=(12,6))
+gs  = matplotlib.gridspec.GridSpec(nrows=3,ncols=3,height_ratios=[0.1,0.5,1.],wspace=0.1,hspace = 0.)
 
 #%%
 
@@ -202,64 +202,64 @@ ax.set_yticklabels(['$\mathbf{y}_{1}^{*}$','$\mathbf{y}_{1:t}^{*}$'], fontsize =
 
 #%%
 
-plt.subplot(gs[2,1])
+# plt.subplot(gs[2,1])
 
-xpos    = np.column_stack((
-    np.cos(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2),
-    np.sin(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2) )) * 2
-
-
-ypos    = np.column_stack((
-    np.cos(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2),
-    np.sin(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2) )) 
-
-n = 0
-
-square_x    = np.asarray([+0.5,+0.5,-0.5,-0.5])*0.75
-square_y    = np.asarray([+0.5,-0.5,-0.5,+0.5])*0.75
-
-filter_x    = []
-filter_y    = []
-
-counter     = -1
-maxcounter  = 60
-
-cmap = matplotlib.cm.get_cmap('turbo')
+# xpos    = np.column_stack((
+#     np.cos(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2),
+#     np.sin(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2) )) * 2
 
 
-# Go through all time steps
-for t in np.arange(1,T,1):
+# ypos    = np.column_stack((
+#     np.cos(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2),
+#     np.sin(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2) )) 
+
+# n = 0
+
+# square_x    = np.asarray([+0.5,+0.5,-0.5,-0.5])*0.75
+# square_y    = np.asarray([+0.5,-0.5,-0.5,+0.5])*0.75
+
+# filter_x    = []
+# filter_y    = []
+
+# counter     = -1
+# maxcounter  = 60
+
+# cmap = matplotlib.cm.get_cmap('turbo')
+
+
+# # Go through all time steps
+# for t in np.arange(1,T,1):
     
-    counter += 1
+#     counter += 1
     
-    # Forecast
-    if t < T-1:
-        plt.fill(t + circ_x, t + circ_y, color=cmap(counter/maxcounter), edgecolor="None")
+#     # Forecast
+#     if t < T-1:
+#         plt.fill(t + circ_x, t + circ_y, color=cmap(counter/maxcounter), edgecolor="None")
     
-    # Forecast
-    plt.fill(t - 1 + triang_x, t + triang_y, color=cmap(counter/maxcounter), edgecolor="None")
+#     # Forecast
+#     plt.fill(t - 1 + triang_x, t + triang_y, color=cmap(counter/maxcounter), edgecolor="None")
     
-    if (t+1)%5 == 0:
+#     if (t+1)%5 == 0:
     
-        for s in np.arange(t-2,-1,-1):
+#         for s in np.arange(t-2,-1,-1):
             
-            counter += 1
+#             counter += 1
             
-            plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
+#             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
-plt.title(r'$\bf{B}$: multi-pass (selected steps)', loc='left', fontsize=labelsize)
-plt.axis('equal')
+# plt.title(r'$\bf{B}$: multi-pass (selected steps)', loc='left', fontsize=labelsize)
+# plt.axis('equal')
 
-plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
-ax = plt.gca()
-ax.set_xticks([1,T-2])
-ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
-ax.set_yticks([2,T-1])
-ax.set_yticklabels(['',''])
+# plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
+# ax = plt.gca()
+# ax.set_xticks([1,T-2])
+# ax.set_xticklabels(['$\mathbf{x}_{1}$','$\mathbf{x}_{t}$'], fontsize = labelsize)
+# ax.set_yticks([2,T-1])
+# ax.set_yticklabels(['',''])
 
 #%%
 
-plt.subplot(gs[2,2])
+plt.subplot(gs[2,1])
 
 
 xpos    = np.column_stack((
@@ -306,7 +306,7 @@ for t in np.arange(1,T,1):
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
 
-plt.title(r'$\bf{C}$: multi-pass (fixed-lag)', loc='left', fontsize=labelsize)
+plt.title(r'$\bf{B}$: multi-pass (fixed-lag)', loc='left', fontsize=labelsize)
 plt.axis('equal')
 
 plt.xlabel('state block', labelpad=-10, fontsize = labelsize)
@@ -318,7 +318,7 @@ ax.set_yticklabels(['',''])
 
 #%%
 
-plt.subplot(gs[2,3])
+plt.subplot(gs[2,2])
 
 xpos    = np.column_stack((
     np.cos(np.linspace(2*np.pi,0,Nnodes+1)[:-1]+np.pi/2),
@@ -362,7 +362,7 @@ for t in np.arange(1,T,1):
                 
             plt.fill(s + square_x, t + square_y, color=cmap(counter/maxcounter), edgecolor="None")
 
-plt.title(r'$\bf{D}$: single-pass', loc='left', fontsize=labelsize)
+plt.title(r'$\bf{C}$: single-pass', loc='left', fontsize=labelsize)
 plt.axis('equal')
 
 plt.xlabel('state block', labelpad=-10, fontsize = labelsize)

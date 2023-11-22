@@ -16,7 +16,7 @@ import scipy.spatial
 import pickle
 import os
 
-use_latex   = False
+use_latex   = True
 
 if use_latex:
     
@@ -29,6 +29,7 @@ if use_latex:
     
 else:
     
+    matplotlib.style.use('default')
     titlesize   = 12
     labelsize   = 10
     addendum    = ""
@@ -198,7 +199,7 @@ plt.plot(
 
 plt.title("$\mathbf{A}$: Lorenz-63 ensemble mean RMSE (iEnKS-PertObs)",loc="left", fontsize = titlesize)
 
-plt.legend(frameon=False,ncol = 2, fontsize = labelsize, loc = "upper right")
+plt.legend(frameon=True,ncol = 1, fontsize = labelsize, loc = "center right", facecolor='white', framealpha=0.5, edgecolor = "k")
 
 plt.xticks(fontsize=labelsize)
 plt.yticks(fontsize=labelsize)
@@ -299,7 +300,7 @@ plt.plot(
 
 plt.title("$\mathbf{C}$: Lorenz-63 ensemble mean RMSE (iEnKS-Sqrt)",loc="left", fontsize = titlesize)
 
-plt.legend(frameon=False,ncol = 2, fontsize = labelsize, loc = "upper right")
+plt.legend(frameon=True,ncol = 1, fontsize = labelsize, loc = "center right", facecolor='white', framealpha=0.5, edgecolor = "k")
 
 plt.xlabel("model evaluations", fontsize = labelsize)
 
@@ -418,6 +419,9 @@ colors  = ['xkcd:cerulean','xkcd:grass green','xkcd:goldenrod','xkcd:orangish re
 
 plt.subplot(gs[0])
 
+marker  = ["","x","+","v","","^"]
+altmarker  = ["","x","*","o","","s"]
+
 for oi,order in enumerate(orders): 
     
     RMSE_f  = copy.copy(RMSEs_f[:,:,:,:,oi])
@@ -433,7 +437,7 @@ for oi,order in enumerate(orders):
     # RMSEval_f = [x if x < 0.6 else np.nan for x in RMSEval_f]
         
     if order[0] == order[1]:
-        plt.plot(Ns,RMSEval_f,label = 'filter (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1],ls=':')
+        plt.plot(Ns,RMSEval_f,label = 'EnTF ('+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1],ls=':')
                
 
     RMSE    = copy.copy(RMSEs[:,:,:,:,oi])
@@ -452,7 +456,7 @@ for oi,order in enumerate(orders):
         pass
         # plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order)+')',color=colors[order[0]-1],linestyle='--',alpha = 0.5)
     else:
-        plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1])
+        plt.plot(Ns,RMSEval,label = 'EnTS ('+str(order[0])+' → '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1])
     
 plt.ylim([0,0.65])
 
@@ -461,7 +465,7 @@ plt.ylabel("time-averaged ensemble mean RMSE", fontsize = labelsize)
 
 # plt.xscale("log")
 # plt.gca().set_xscale('log')
-plt.gca().set_xticks(Ns, fontsize = labelsize),
+plt.gca().set_xticks(Ns),
 plt.gca().set_xticklabels(Ns, fontsize = labelsize)
 plt.yticks(fontsize=labelsize)
 
@@ -508,7 +512,7 @@ for ni,N in enumerate(Ns):
 RMSEval_f = [x if x < 0.6 else np.nan for x in RMSEval_f]
     
 if order[0] == order[1]:
-    plt.plot(Ns,RMSEval_f,label = 'EnTF (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1],ls=':')
+    plt.plot(Ns,RMSEval_f,label = 'EnTF ('+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1],ls=':')
 
 RMSE    = copy.copy(RMSEs[:,:,:,:,oi])
 RMSE    = np.nanmean(RMSE,axis=0)
@@ -526,7 +530,7 @@ if order[0] != order[1]:
     pass
     # plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order)+')',color=colors[order[0]-1],linestyle='--',alpha = 0.5)
 else:
-    plt.plot(Ns,RMSEval,label = 'EnTS (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1])
+    plt.plot(Ns,RMSEval,label = 'EnTS ('+str(order[0])+' → '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1])
     
 plt.ylim([0,0.65])
 
@@ -535,7 +539,7 @@ plt.ylabel("time-averaged ensemble mean RMSE", fontsize = labelsize)
 
 # plt.xscale("log")
 # plt.gca().set_xscale('log')
-plt.gca().set_xticks(Ns, fontsize = labelsize),
+plt.gca().set_xticks(Ns),
 plt.gca().set_xticklabels(Ns, fontsize = labelsize)
 plt.yticks(fontsize=labelsize)
 
@@ -556,7 +560,7 @@ plt.plot(
     rmse_edge_sqrt[:,1],
     color   = "xkcd:grey",#[0.2,0.2,0.2],
     label   = "iEnKS (Sqrt)",
-    marker  = 'x',
+    marker  = '+',
     zorder  = -1)
 
 # Plot the legend
