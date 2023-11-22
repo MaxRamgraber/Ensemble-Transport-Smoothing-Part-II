@@ -10,7 +10,7 @@ import os
 from matplotlib import gridspec
 from transport_map_138 import *
 
-use_latex   = False
+use_latex   = True
 
 if use_latex:
     
@@ -25,7 +25,6 @@ if use_latex:
     
 else:
     
-    matplotlib.style.use('default')
     titlesize   = 12
     labelsize   = 10
     addendum    = ""
@@ -387,7 +386,7 @@ plt.gca().annotate('', xy=(xp-0.08, 0.4), xycoords='axes fraction', xytext=(xp-0
                     arrowprops=dict(color=col,headlength=20,headwidth=35,width=1),)
 
 
-plt.gca().text(-0.1175, 0.4, '$S_{1}(w_{1})$', transform=plt.gca().transAxes, fontsize=labelsize,
+plt.gca().text(-0.1175, 0.4, '$S_{1}(x_{1})$', transform=plt.gca().transAxes, fontsize=labelsize,
         verticalalignment='center',horizontalalignment='center',color=[0.2,0.2,0.2])
 
 
@@ -443,7 +442,7 @@ plt.tick_params(left=False,
 
 plt.gca().invert_yaxis()
 
-plt.gca().text(0.025, 0.1, '$w_{1}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.025, 0.1, '$x_{1}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='bottom',horizontalalignment='left',color='#FF5000')
 
 # -------------------------------------------------------------------------
@@ -539,7 +538,7 @@ plt.gca().annotate('', xy=(xp+0.08, 0.6), xycoords='axes fraction', xytext=(xp+0
                     arrowprops=dict(color=col,headlength=20,headwidth=35,width=1),)
 
 
-plt.gca().text(-0.1, 0.6, '$S_{2}^{-1}(z_{2};w_{1})$', transform=plt.gca().transAxes, fontsize=labelsize,
+plt.gca().text(-0.1, 0.6, '$S_{2}^{-1}(z_{2};x_{1})$', transform=plt.gca().transAxes, fontsize=labelsize,
         verticalalignment='center',horizontalalignment='center',color=[0.2,0.2,0.2])
 
 
@@ -562,7 +561,7 @@ plt.gca().annotate('', xy=(xp-0.08, 0.4), xycoords='axes fraction', xytext=(xp-0
                     arrowprops=dict(color=col,headlength=20,headwidth=35,width=1),)
 
 
-plt.gca().text(-0.1175, 0.4, '$S_{2}(w_{1},w_{2})$', transform=plt.gca().transAxes, fontsize=labelsize,
+plt.gca().text(-0.1175, 0.4, '$S_{2}(x_{1},x_{2})$', transform=plt.gca().transAxes, fontsize=labelsize,
         verticalalignment='center',horizontalalignment='center',color=[0.2,0.2,0.2])
 
 # -------------------------------------------------------------------------
@@ -596,7 +595,7 @@ plt.tick_params(left=False,
 
 plt.gca().invert_yaxis()
 
-plt.gca().text(0.025, 0.1, '$w_{1}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.025, 0.1, '$x_{1}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='bottom',horizontalalignment='left',color='#FF5000')
 
 # -------------------------------------------------------------------------
@@ -629,7 +628,7 @@ plt.tick_params(left=False,
                 labelleft=False,
                 labelbottom=False)
 
-plt.gca().text(0.9, 0.975, '$w_{2}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.9, 0.975, '$x_{2}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='top',horizontalalignment='right',color='#FF5000')
 
 #%%
@@ -824,7 +823,7 @@ plt.tick_params(left=False,
 
 plt.gca().invert_yaxis()
 
-plt.gca().text(0.025, 0.1, '$w_{1}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.025, 0.1, '$x_{1}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='bottom',horizontalalignment='left',color='#1988B8')
 
 # -------------------------------------------------------------------------
@@ -899,7 +898,7 @@ plt.gca().annotate('', xy=(xp+0.08, 0.5), xycoords='axes fraction', xytext=(xp+0
                     arrowprops=dict(color=col,headlength=20,headwidth=35,width=1),)
 
 
-plt.gca().text(-0.1, 0.5, '$S_{2}^{-1}(z_{2};w_{1}^{*})$', transform=plt.gca().transAxes, fontsize=labelsize,
+plt.gca().text(-0.1, 0.5, '$S_{2}^{-1}(z_{2};x_{1}^{*})$', transform=plt.gca().transAxes, fontsize=labelsize,
         verticalalignment='center',horizontalalignment='center',color=[0.2,0.2,0.2])
 
 
@@ -962,7 +961,7 @@ plt.tick_params(left=False,
 
 plt.gca().invert_yaxis()
 
-plt.gca().text(0.025, 0.1, '$w_{1}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.025, 0.1, '$x_{1}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='bottom',horizontalalignment='left',color='#1988B8')
 
 # -------------------------------------------------------------------------
@@ -993,7 +992,7 @@ plt.tick_params(left=False,
                 labelleft=False,
                 labelbottom=False)
 
-plt.gca().text(0.9, 0.975, '$w_{2}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
+plt.gca().text(0.9, 0.975, '$x_{2}^{*}$', transform=plt.gca().transAxes, fontsize=bigsize,
         verticalalignment='top',horizontalalignment='right',color='#FF5000')
 
 plt.savefig('conditioning'+addendum+'.png',dpi=600,bbox_inches='tight')

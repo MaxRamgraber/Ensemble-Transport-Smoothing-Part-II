@@ -16,7 +16,7 @@ import scipy.spatial
 import pickle
 import os
 
-use_latex   = True
+use_latex   = False
 
 if use_latex:
     
@@ -29,7 +29,6 @@ if use_latex:
     
 else:
     
-    matplotlib.style.use('default')
     titlesize   = 12
     labelsize   = 10
     addendum    = ""
@@ -419,9 +418,6 @@ colors  = ['xkcd:cerulean','xkcd:grass green','xkcd:goldenrod','xkcd:orangish re
 
 plt.subplot(gs[0])
 
-marker  = ["","x","+","v","","^"]
-altmarker  = ["","x","*","o","","s"]
-
 for oi,order in enumerate(orders): 
     
     RMSE_f  = copy.copy(RMSEs_f[:,:,:,:,oi])
@@ -437,7 +433,7 @@ for oi,order in enumerate(orders):
     # RMSEval_f = [x if x < 0.6 else np.nan for x in RMSEval_f]
         
     if order[0] == order[1]:
-        plt.plot(Ns,RMSEval_f,label = 'filter (order '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1],ls=':')
+        plt.plot(Ns,RMSEval_f,label = 'filter (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1],ls=':')
                
 
     RMSE    = copy.copy(RMSEs[:,:,:,:,oi])
@@ -456,7 +452,7 @@ for oi,order in enumerate(orders):
         pass
         # plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order)+')',color=colors[order[0]-1],linestyle='--',alpha = 0.5)
     else:
-        plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1])
+        plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1])
     
 plt.ylim([0,0.65])
 
@@ -512,7 +508,7 @@ for ni,N in enumerate(Ns):
 RMSEval_f = [x if x < 0.6 else np.nan for x in RMSEval_f]
     
 if order[0] == order[1]:
-    plt.plot(Ns,RMSEval_f,label = 'EnTF (order '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1],ls=':')
+    plt.plot(Ns,RMSEval_f,label = 'EnTF (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1],ls=':')
 
 RMSE    = copy.copy(RMSEs[:,:,:,:,oi])
 RMSE    = np.nanmean(RMSE,axis=0)
@@ -530,7 +526,7 @@ if order[0] != order[1]:
     pass
     # plt.plot(Ns,RMSEval,label = 'smoother (order '+str(order)+')',color=colors[order[0]-1],linestyle='--',alpha = 0.5)
 else:
-    plt.plot(Ns,RMSEval,label = 'EnTS (order '+str(order[0])+')',marker  = marker[order[0]],color=colors[order[0]-1])
+    plt.plot(Ns,RMSEval,label = 'EnTS (order '+str(order[0])+')',marker  = 'x',color=colors[order[0]-1])
     
 plt.ylim([0,0.65])
 
@@ -560,7 +556,7 @@ plt.plot(
     rmse_edge_sqrt[:,1],
     color   = "xkcd:grey",#[0.2,0.2,0.2],
     label   = "iEnKS (Sqrt)",
-    marker  = '+',
+    marker  = 'x',
     zorder  = -1)
 
 # Plot the legend
